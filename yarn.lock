@@ -2026,6 +2026,11 @@
   dependencies:
     "p-limit" "^3.0.2"
 
+"p-sleep@^1.1.0":
+  "integrity" "sha512-bwP3GKZirBUYMtiUuBrheLUQdRXVeE/pmHOaLpNJzNfAD4b5AjDn6l823brXcQFade4G/g7GMNQ3KV86E8EaEw=="
+  "resolved" "https://registry.npmjs.org/p-sleep/-/p-sleep-1.1.0.tgz"
+  "version" "1.1.0"
+
 "pako@~1.0.2":
   "integrity" "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="
   "resolved" "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz"
@@ -2223,6 +2228,19 @@
   "integrity" "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
   "version" "16.13.1"
+
+"react-panresponder-web@^1.0.2":
+  "integrity" "sha512-kUfNinxTavO7PY/s/khqRnJgtp8czpCG+inZlKRw/wFaLAARxewXlE28XmGeK0LWpKBuhEm+YKPN0nruT/urrg=="
+  "resolved" "https://registry.npmjs.org/react-panresponder-web/-/react-panresponder-web-1.0.2.tgz"
+  "version" "1.0.2"
+
+"react-tinder-card@^1.6.1":
+  "integrity" "sha512-F8R0vo6/sptPiQRtRX14p2reaa1NcCqrGVIm2jURiYQyhg45auVoq3/M8slFsFSqwFwDwioOzCJKsXiGGfmY3A=="
+  "resolved" "https://registry.npmjs.org/react-tinder-card/-/react-tinder-card-1.6.1.tgz"
+  "version" "1.6.1"
+  dependencies:
+    "p-sleep" "^1.1.0"
+    "react-panresponder-web" "^1.0.2"
 
 "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^18.0.0-0", "react@^18.2.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", "react@18.2.0":
   "integrity" "sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ=="

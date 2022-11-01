@@ -12,7 +12,7 @@ export default function Home() {
 		signInWithPopup(authentication, provider)
 			.then((result) => {
 				console.log(result);
-				router.push('/Home');
+				router.push('/House');
 			})
 			.catch((error) => {
 				console.log(error);

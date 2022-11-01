@@ -70,7 +70,7 @@ function House() {
 	};
 
     const goToChat = () => {
-		router.push('/Home');
+		router.push('/Chat');
 	};
   return (
     <div>
@@ -101,7 +101,23 @@ function House() {
 					</button>
 				</div>
 			</div>
-            </div>
+
+            {/* cards */}
+
+
+            <div className='flex justify-evenly'>
+				<button
+					// onPress={() => swipeRef.current.swipeLeft()}
+					className='items-center justify-center rounded-full w-16 h-16 bg-red-200'>
+					{/* <Entypo name="cross" size={24} color="red" /> */}
+				</button>
+				<button
+					// onPress={() => swipeRef.current.swipeRight()}
+					className='items-center justify-center rounded-full w-16 h-16 bg-green-200'>
+					{/* <Entypo name="check" size={24} color="green" /> */}
+				</button>
+			</div>
+        </div>
   )
 }
 
