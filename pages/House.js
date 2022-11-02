@@ -141,9 +141,9 @@ function House() {
       // during latest swipes. Only the last outOfFrame event should be considered valid
     }
   
-    const swipe = (dir) => {
+    const swipe = async (dir) => {
       if (canSwipe && currentIndex < dbo.length) {
-         childRefs[currentIndex].current.swipe(dir) // Swipe the card!
+         await childRefs[currentIndex].current.swipe(dir) // Swipe the card!
       }
     }
   
@@ -188,8 +188,8 @@ function House() {
             {/* cards */}
          
       <div className='flex justify-center'>
-        {characters.map((character) =>
-          <TinderCard className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2" key={character.name} preventSwipe={['up', 'down']} onSwipe={(dir) => swiped(dir, character.name)}>
+      {dbo.map((character, index) => (
+          <TinderCard ref={childRefs[index]} className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2" key={character.name} preventSwipe={['up', 'down']}  onSwipe={(dir) => swiped(dir, character.name, index)}  onCardLeftScreen={() => outOfFrame(character.name, index)}>
             <div className="flex h-3/4">
           {/* <div className='absolute top-0 h-full w-full rounded-xl'> */}
 			    <Image
@@ -206,11 +206,13 @@ function House() {
 				<p>{character.interests}</p>
 			</div>
           </TinderCard>
-        )}
-        {lastDirection ? <h2 className='infoText'>You swiped {lastDirection}</h2> : <h2 className='infoText' />}
+        ))}
+      
       </div>
       
- 
+        <div className='flex justify-center absolute inset-x-0 bottom-28'> 
+        {lastDirection ? <h2 className='infoText'>You swiped {lastDirection}</h2> : <h2 className='infoText' />}
+        </div>
 
             {/* buttons */}
         <div className='flex justify-evenly absolute inset-x-0 bottom-11'>
@@ -222,6 +224,7 @@ function House() {
 			</button>
 			<button
 				// onPress={() => swipeRef.current.swipeRight()}
+                onClick={() => swipe('right')}
 				className='items-center justify-center rounded-full w-16 h-16 bg-green-200'>
 				{/* <Entypo name="check" size={24} color="green" /> */}
 			</button>
