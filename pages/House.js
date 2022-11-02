@@ -21,29 +21,29 @@ import TinderCard from 'react-tinder-card'
 
 const dbo = [
     {
-      name: 'Richard Hendricks',
-      url: 'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-      interests:'bball'
+      displayName: 'Richard Hendricks',
+      photoURL: 'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+      interest:'bball'
     },
     {
-      name: 'Erlich Bachman',
-      url: 'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-      interests:'bball'
+      displayName: 'Erlich Bachman',
+      photoURL: 'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+      interest:'dribbling'
     },
     {
-      name: 'Monica Hall',
-      url: 'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-      interests:'bball'
+      displayName: 'Monica Hall',
+      photoURL: 'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+      interest:'shooting'
     },
     {
-      name: 'Jared Dunn',
-      url: 'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
-      interests:'bball'
+      displayName: 'Jared Dunn',
+      photoURL: 'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+      interest:'passing'
     },
     {
-      name: 'Dinesh Chugtai',
-      url: 'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
-      interests:'bball'
+      displayName: 'Dinesh Chugtai',
+      photoURL: 'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+      interest:'blocking'
     }
   ]
   
@@ -53,6 +53,81 @@ function House() {
 
     const [user, setUser] = useState();
 	const [picture, setPicture] = useState();
+    const colRef = collection(db, 'users');
+	const [people, setPeople] = useState([
+        {
+          displayName: 'Jordan',
+          photoURL: 'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+          interest:'bball'
+        },
+        {
+          displayName: 'James',
+          photoURL: 'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+          interest:'dribbling'
+        },
+        {
+          displayName: 'Kobe',
+          photoURL: 'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+          interest:'shooting'
+        },
+        {
+          displayName: 'Wade',
+          photoURL: 'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+          interest:'passing'
+        },
+        {
+          displayName: 'Barkley',
+          photoURL: 'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+          interest:'blocking'
+        }
+      ]);
+    const [currentIndex, setCurrentIndex] = useState(people.length - 1)
+	const [aliens, setAliens] = useState([
+		{
+			displayName: 'alien',
+		},
+	]);
+    const [lastDirection, setLastDirection] = useState()
+    // used for outOfFrame closure
+
+    const currentIndexRef = useRef(currentIndex)
+    
+  
+    const childRefs = useMemo(
+      () =>
+        Array(people.length)
+          .fill(0)
+          .map((i) => React.createRef()),
+      []
+    )
+  
+    const updateCurrentIndex = (val) => {
+      setCurrentIndex(val)
+      currentIndexRef.current = val
+    }
+  
+    const canSwipe = currentIndex >= 0
+  
+    // set last direction and decrease current index
+    const swiped = (direction, nameToDelete, index) => {
+      setLastDirection(direction)
+      updateCurrentIndex(index - 1)
+    }
+  
+    const outOfFrame = (displayName, idx) => {
+      console.log(`${displayName} (${idx}) left the screen!`, currentIndexRef.current)
+      // handle the case in which go back is pressed before card goes outOfFrame
+      currentIndexRef.current >= idx && childRefs[idx].current.restoreCard()
+      // TODO: when quickly swipe and restore multiple times the same card,
+      // it happens multiple outOfFrame events are queued and the card disappear
+      // during latest swipes. Only the last outOfFrame event should be considered valid
+    }
+  
+    const swipe = async (dir) => {
+      if (canSwipe && currentIndex < people.length) {
+         await childRefs[currentIndex].current.swipe(dir) // Swipe the card!
+      }
+    } 
 
     const logout = () => {
 		signOut(authentication)
@@ -62,6 +137,14 @@ function House() {
 			.catch((error) => {
 				console.log(error);
 			});
+	};
+
+    const goToHome = () => {
+		router.push('/Home');
+	};
+
+    const goToChat = () => {
+		router.push('/Chat');
 	};
 
     useEffect(() => {
@@ -81,7 +164,20 @@ function House() {
 				if (user) {
 					getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
 						if (docSnap.exists()) {
-							console.log('logged in!');
+                            console.log(user.uid, 'logged in!')
+                            const q = query(colRef);
+                    onSnapshot(q, (snapshot) => {
+                       
+            		setPeople(snapshot.docs
+                            .filter((doc) => { console.log('user', user?.uid)
+                                return doc.id !== user?.uid
+                            })
+            				.map((doc) => ({
+            					id: doc.id,
+            					...doc.data(),
+            				}))
+            		        );
+            	        });
 						} else {
 							router.push('/Home');
 						}
@@ -92,69 +188,12 @@ function House() {
 				router.push('/');
 			}
 		});
-	}, []);
+	}, [db]);
+
+    useEffect(() => {
+        setCurrentIndex(people.length - 1)
+    }, [people])
     
-    const goToHome = () => {
-		router.push('/Home');
-	};
-
-    const goToChat = () => {
-		router.push('/Chat');
-	};
-
-    const characters = dbo
-  
-    const [currentIndex, setCurrentIndex] = useState(dbo.length - 1)
-    const [lastDirection, setLastDirection] = useState()
-    // used for outOfFrame closure
-    const currentIndexRef = useRef(currentIndex)
-  
-    const childRefs = useMemo(
-      () =>
-        Array(dbo.length)
-          .fill(0)
-          .map((i) => React.createRef()),
-      []
-    )
-  
-    const updateCurrentIndex = (val) => {
-      setCurrentIndex(val)
-      currentIndexRef.current = val
-    }
-  
-    const canGoBack = currentIndex < dbo.length - 1
-  
-    const canSwipe = currentIndex >= 0
-  
-    // set last direction and decrease current index
-    const swiped = (direction, nameToDelete, index) => {
-      setLastDirection(direction)
-      updateCurrentIndex(index - 1)
-    }
-  
-    const outOfFrame = (name, idx) => {
-      console.log(`${name} (${idx}) left the screen!`, currentIndexRef.current)
-      // handle the case in which go back is pressed before card goes outOfFrame
-      currentIndexRef.current >= idx && childRefs[idx].current.restoreCard()
-      // TODO: when quickly swipe and restore multiple times the same card,
-      // it happens multiple outOfFrame events are queued and the card disappear
-      // during latest swipes. Only the last outOfFrame event should be considered valid
-    }
-  
-    const swipe = async (dir) => {
-      if (canSwipe && currentIndex < dbo.length) {
-         await childRefs[currentIndex].current.swipe(dir) // Swipe the card!
-      }
-    }
-  
-    // increase current index and show card
-    const goBack = async () => {
-      if (!canGoBack) return
-      const newIndex = currentIndex + 1
-      updateCurrentIndex(newIndex)
-      await childRefs[newIndex].current.restoreCard()
-    }
-      
   return (
     <div>
 			<div className="flex justify-evenly">
@@ -188,12 +227,12 @@ function House() {
             {/* cards */}
          
       <div className='flex justify-center'>
-      {dbo.map((character, index) => (
-          <TinderCard ref={childRefs[index]} className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2" key={character.name} preventSwipe={['up', 'down']}  onSwipe={(dir) => swiped(dir, character.name, index)}  onCardLeftScreen={() => outOfFrame(character.name, index)}>
+      {people.map((character, index) => (
+          <TinderCard ref={childRefs[index]} className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2" key={character.displayName} preventSwipe={['up', 'down']}  onSwipe={(dir) => swiped(dir, character.displayName, index)}  onCardLeftScreen={() => outOfFrame(character.displayName, index)}>
             <div className="flex h-3/4">
           {/* <div className='absolute top-0 h-full w-full rounded-xl'> */}
 			    <Image
-				src={character.url}
+				src={character.photoURL}
 				alt="personPhoto"
 				layout="fill"
 				className=""
@@ -202,12 +241,11 @@ function House() {
 				/>
 			</div>
             <div className="p-5 flex flex-col">
-			    <p className='text-xl font-bold'>{character.name}</p>
-				<p>{character.interests}</p>
+			    <p className='text-xl font-bold text-black'>{character.displayName}</p>
+				<p className='text-xl text-black'>{character.interest}</p>
 			</div>
           </TinderCard>
         ))}
-      
       </div>
       
         <div className='flex justify-center absolute inset-x-0 bottom-28'> 
