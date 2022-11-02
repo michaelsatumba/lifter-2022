@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo, useRef } from 'react'
 import { useEffect, useState } from 'react';
 import { authentication, db, storage } from '../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
@@ -22,23 +22,28 @@ import TinderCard from 'react-tinder-card'
 const dbo = [
     {
       name: 'Richard Hendricks',
-      url: 'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60'
+      url: 'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+      interests:'bball'
     },
     {
       name: 'Erlich Bachman',
-      url: 'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60'
+      url: 'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+      interests:'bball'
     },
     {
       name: 'Monica Hall',
-      url: 'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60'
+      url: 'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+      interests:'bball'
     },
     {
       name: 'Jared Dunn',
-      url: 'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60'
+      url: 'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+      interests:'bball'
     },
     {
       name: 'Dinesh Chugtai',
-      url: 'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60'
+      url: 'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+      interests:'bball'
     }
   ]
   
@@ -76,7 +81,7 @@ function House() {
 				if (user) {
 					getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
 						if (docSnap.exists()) {
-							console.log('works!');
+							console.log('logged in!');
 						} else {
 							router.push('/Home');
 						}
@@ -98,20 +103,57 @@ function House() {
 	};
 
     const characters = dbo
+  
+    const [currentIndex, setCurrentIndex] = useState(dbo.length - 1)
     const [lastDirection, setLastDirection] = useState()
+    // used for outOfFrame closure
+    const currentIndexRef = useRef(currentIndex)
   
-    const swiped = (direction, nameToDelete) => {
-      console.log('removing: ' + nameToDelete)
+    const childRefs = useMemo(
+      () =>
+        Array(dbo.length)
+          .fill(0)
+          .map((i) => React.createRef()),
+      []
+    )
+  
+    const updateCurrentIndex = (val) => {
+      setCurrentIndex(val)
+      currentIndexRef.current = val
+    }
+  
+    const canGoBack = currentIndex < dbo.length - 1
+  
+    const canSwipe = currentIndex >= 0
+  
+    // set last direction and decrease current index
+    const swiped = (direction, nameToDelete, index) => {
       setLastDirection(direction)
+      updateCurrentIndex(index - 1)
     }
   
-    const outOfFrame = (name) => {
-      console.log(name + ' left the screen!')
+    const outOfFrame = (name, idx) => {
+      console.log(`${name} (${idx}) left the screen!`, currentIndexRef.current)
+      // handle the case in which go back is pressed before card goes outOfFrame
+      currentIndexRef.current >= idx && childRefs[idx].current.restoreCard()
+      // TODO: when quickly swipe and restore multiple times the same card,
+      // it happens multiple outOfFrame events are queued and the card disappear
+      // during latest swipes. Only the last outOfFrame event should be considered valid
     }
-
-    const onSwipe = (left) => {
-		console.log('You swiped: ' + left);
-	};
+  
+    const swipe = (dir) => {
+      if (canSwipe && currentIndex < dbo.length) {
+         childRefs[currentIndex].current.swipe(dir) // Swipe the card!
+      }
+    }
+  
+    // increase current index and show card
+    const goBack = async () => {
+      if (!canGoBack) return
+      const newIndex = currentIndex + 1
+      updateCurrentIndex(newIndex)
+      await childRefs[newIndex].current.restoreCard()
+    }
       
   return (
     <div>
@@ -145,44 +187,46 @@ function House() {
 
             {/* cards */}
          
-      <div className='flex mt-6 justify-center h-screen'>
+      <div className='flex justify-center'>
         {characters.map((character) =>
-          <TinderCard className="absolute bg-red-500 h-3/4 w-3/4 rounded-xl" key={character.name} preventSwipe={['up', 'down']} onSwipe={(dir) => swiped(dir, character.name)}>
-          <div className="h-24 w-24 relative">
+          <TinderCard className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2" key={character.name} preventSwipe={['up', 'down']} onSwipe={(dir) => swiped(dir, character.name)}>
+            <div className="flex h-3/4">
           {/* <div className='absolute top-0 h-full w-full rounded-xl'> */}
-								<Image
-									src={character.url}
-									alt="personPhoto"
-									layout="fill"
-									className=""
-                                    width={500}
-                                    height={500}
-								/>
-							</div>
-                            <div className="p-5 flex flex-col">
-								<p className='text-xl font-bold'>{character.name}</p>
-								{/* <p>{person.interests}</p> */}
-							</div>
+			    <Image
+				src={character.url}
+				alt="personPhoto"
+				layout="fill"
+				className=""
+                width={500}
+                height={500}
+				/>
+			</div>
+            <div className="p-5 flex flex-col">
+			    <p className='text-xl font-bold'>{character.name}</p>
+				<p>{character.interests}</p>
+			</div>
           </TinderCard>
         )}
+        {lastDirection ? <h2 className='infoText'>You swiped {lastDirection}</h2> : <h2 className='infoText' />}
       </div>
-      {lastDirection ? <h2 className='infoText'>You swiped {lastDirection}</h2> : <h2 className='infoText' />}
+      
  
 
             {/* buttons */}
-            <div className='flex justify-evenly mt-56'>
-				<button
-					// onPress={() => swipeRef.current.swipeLeft()}
-					className='items-center justify-center rounded-full w-16 h-16 bg-red-200'>
-					{/* <Entypo name="cross" size={24} color="red" /> */}
-				</button>
-				<button
-					// onPress={() => swipeRef.current.swipeRight()}
-					className='items-center justify-center rounded-full w-16 h-16 bg-green-200'>
-					{/* <Entypo name="check" size={24} color="green" /> */}
-				</button>
-			</div>
-        </div>
+        <div className='flex justify-evenly absolute inset-x-0 bottom-11'>
+			<button
+				// onPress={() => swipeRef.current.swipeLeft()}
+                onClick={() => swipe('left')}
+				className='items-center justify-center rounded-full w-16 h-16 bg-red-200'>
+				{/* <Entypo name="cross" size={24} color="red" /> */}
+			</button>
+			<button
+				// onPress={() => swipeRef.current.swipeRight()}
+				className='items-center justify-center rounded-full w-16 h-16 bg-green-200'>
+				{/* <Entypo name="check" size={24} color="green" /> */}
+			</button>
+		</div>
+    </div>
   )
 }
 
