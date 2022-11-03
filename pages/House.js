@@ -5,6 +5,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {
 	addDoc,
 	getDoc,
+	getDocs,
 	collection,
 	serverTimestamp,
 	deleteDoc,
@@ -13,6 +14,8 @@ import {
 	onSnapshot,
 	query,
 	updateDoc,
+	setDoc,
+	where,
 } from 'firebase/firestore';
 import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { useRouter } from 'next/router';
@@ -122,6 +125,21 @@ function House() {
 	const swiped = (direction, nameToDelete, index) => {
 		setLastDirection(direction);
 		updateCurrentIndex(index - 1);
+		console.log('removed', nameToDelete);
+		// if (direction === 'left') {
+		// 	setLastDirection(direction);
+		// 	updateCurrentIndex(index - 1);
+		// 	alert('left');
+		// 	// const userSwiped = people[currentIndex];
+		// 	// console.log(`You swiped on ${userSwiped.displayName}`);
+		// } else if (direction === 'right') {
+		// 	setLastDirection(direction);
+		// 	updateCurrentIndex(index - 1);
+		// 	alert('right');
+		// 	console.log(currentIndex);
+		// 	// const userSwiped = people[currentIndex];
+		// 	// console.log(`You swiped on ${userSwiped.displayName}`);
+		// }
 	};
 
 	const swiped2 = (direction) => {
@@ -137,8 +155,18 @@ function House() {
 	};
 
 	const swipe = async (dir) => {
-		if (canSwipe && currentIndex < people.length) {
+		if (canSwipe && currentIndex < people.length && dir === 'left') {
 			await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
+			// alert('left');
+			const userSwiped = people[currentIndex];
+			console.log(`You swiped NOPE on ${userSwiped.displayName}`); // wow it worked!
+			setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped);
+		} else if (canSwipe && currentIndex < people.length && dir === 'right') {
+			await childRefs[currentIndex].current.swipe(dir);
+			// alert('right');
+			const userSwiped = people[currentIndex];
+			console.log(`You swiped on ${userSwiped.displayName}`);
+			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped);
 		}
 		setNumberOfPeople(numberOfPeople - 1);
 	};
@@ -157,8 +185,8 @@ function House() {
 		router.push('/Home');
 	};
 
-	const goToChat = () => {
-		router.push('/Chat');
+	const goToMatches = () => {
+		router.push('/Matches');
 	};
 
 	useEffect(() => {
@@ -178,21 +206,57 @@ function House() {
 				if (user) {
 					getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
 						if (docSnap.exists()) {
-							console.log(user.uid, 'logged in!');
-							const q = query(colRef);
-							onSnapshot(q, (snapshot) => {
-								setPeople(
-									snapshot.docs
-										.filter((doc) => {
-											console.log('user', user?.uid);
-											return doc.id !== user?.uid;
-										})
-										.map((doc) => ({
-											id: doc.id,
-											...doc.data(),
-										}))
+							console.log(user.displayName, 'logged in!');
+							let unsub; // initialize variable
+							const fetchCards = async () => {
+								// id's of people of nopes
+								const nopes = await getDocs(
+									collection(db, 'users', user.uid, 'nopes')
+								).then((snapshot) => snapshot.docs.map((doc) => doc.id));
+
+								// id's of people of swipes
+								const swipes = await getDocs(
+									collection(db, 'users', user.uid, 'swipes')
+								).then((snapshot) => snapshot.docs.map((doc) => doc.id));
+
+								const nopedUserIds = nopes.length > 0 ? nopes : ['test'];
+								const swipedUserIds = swipes.length > 0 ? swipes : ['test'];
+
+								unsub = onSnapshot(
+									// query data where id does not equal id from nopedUserIds and swipedUserIds
+									query(
+										collection(db, 'users'),
+										where('id', 'not-in', [...nopedUserIds, ...swipedUserIds])
+									),
+									(snapshot) => {
+										setPeople(
+											snapshot.docs
+												.filter((doc) => doc.id !== user.uid)
+												.map((doc) => ({
+													id: doc.id,
+													...doc.data(),
+												}))
+										);
+									}
 								);
-							});
+							};
+
+							fetchCards();
+
+							return unsub;
+							// const q = query(colRef);
+							// onSnapshot(q, (snapshot) => {
+							// 	setPeople(
+							// 		snapshot.docs
+							// 			.filter((doc) => {
+							// 				return doc.id !== user?.uid;
+							// 			})
+							// 			.map((doc) => ({
+							// 				id: doc.id,
+							// 				...doc.data(),
+							// 			}))
+							// 	);
+							// });
 						} else {
 							router.push('/Home');
 						}
@@ -210,8 +274,6 @@ function House() {
 		setNumberOfPeople(people.length);
 	}, [people]);
 
-	console.log(numberOfPeople);
-
 	return (
 		<div>
 			<div className="flex justify-evenly">
@@ -223,7 +285,7 @@ function House() {
 				</button>
 
 				<div>
-					<button onClick={goToChat}>
+					<button onClick={goToMatches}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							className="h-14 w-6"
@@ -256,7 +318,15 @@ function House() {
 								className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
 								key={character.displayName}
 								preventSwipe={['up', 'down']}
-								onSwipe={(dir) => swiped(dir, character.displayName, index)}
+								// onSwipe={(dir) => swiped(dir, character.displayName, index)}
+								onSwipeLeft={(cardIndex) => {
+									console.log('Swipe NOPE');
+									// swipeLeft(cardIndex);
+								}}
+								onSwipedRight={(cardIndex) => {
+									console.log('Swipe MATCH');
+									// swipeRight(cardIndex);
+								}}
 								onCardLeftScreen={() =>
 									outOfFrame(character.displayName, index)
 								}
