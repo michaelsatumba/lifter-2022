@@ -122,11 +122,18 @@ function House() {
 	const canSwipe = currentIndex >= 0;
 
 	// set last direction and decrease current index
-	const swiped = (direction, nameToDelete, index) => {
-		setLastDirection(direction);
+	const swiped = (dir, nameToDelete, index) => {
+		setLastDirection(dir);
 		updateCurrentIndex(index - 1);
 		console.log('removed', nameToDelete);
-		console.log('direction', direction);
+		console.log('direction', dir);
+		console.log('index', index);
+		const userSwiped = people[index]; // works!
+		if (dir === 'left') {
+			setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped); // amazed!
+		} else if (dir === 'right') {
+			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped); // amazed!
+		}
 	};
 
 	const swiped2 = (direction) => {
@@ -143,16 +150,13 @@ function House() {
 
 	const swipe = async (dir) => {
 		if (canSwipe && currentIndex < people.length && dir === 'left') {
-			await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
-			// alert('left');
-			const userSwiped = people[currentIndex];
-			console.log(`You swiped left on ${userSwiped.displayName}`); // wow it worked!
+			await childRefs[currentIndex].current.swipe(dir); // Swipe the card! // promise fulfilled
+			const userSwiped = people[currentIndex]; // get user
+			// console.log(`You swiped left on ${userSwiped.displayName}`); // wow it worked!
 			setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped);
 		} else if (canSwipe && currentIndex < people.length && dir === 'right') {
 			await childRefs[currentIndex].current.swipe(dir);
-			// alert('right');
 			const userSwiped = people[currentIndex];
-			console.log(`You swiped right on ${userSwiped.displayName}`);
 			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped);
 		}
 		setNumberOfPeople(numberOfPeople - 1);
