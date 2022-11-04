@@ -126,20 +126,7 @@ function House() {
 		setLastDirection(direction);
 		updateCurrentIndex(index - 1);
 		console.log('removed', nameToDelete);
-		// if (direction === 'left') {
-		// 	setLastDirection(direction);
-		// 	updateCurrentIndex(index - 1);
-		// 	alert('left');
-		// 	// const userSwiped = people[currentIndex];
-		// 	// console.log(`You swiped on ${userSwiped.displayName}`);
-		// } else if (direction === 'right') {
-		// 	setLastDirection(direction);
-		// 	updateCurrentIndex(index - 1);
-		// 	alert('right');
-		// 	console.log(currentIndex);
-		// 	// const userSwiped = people[currentIndex];
-		// 	// console.log(`You swiped on ${userSwiped.displayName}`);
-		// }
+		console.log('direction', direction);
 	};
 
 	const swiped2 = (direction) => {
@@ -147,25 +134,25 @@ function House() {
 		setLastDirection(direction);
 	};
 
-	const outOfFrame = (displayName, idx) => {
-		console.log(
-			`${displayName} (${idx}) left the screen!`,
-			currentIndexRef.current
-		);
-	};
+	// const outOfFrame = (displayName, idx) => {
+	// 	console.log(
+	// 		`${displayName} (${idx}) left the screen!`,
+	// 		currentIndexRef.current
+	// 	);
+	// };
 
 	const swipe = async (dir) => {
 		if (canSwipe && currentIndex < people.length && dir === 'left') {
 			await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
 			// alert('left');
 			const userSwiped = people[currentIndex];
-			console.log(`You swiped NOPE on ${userSwiped.displayName}`); // wow it worked!
+			console.log(`You swiped left on ${userSwiped.displayName}`); // wow it worked!
 			setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped);
 		} else if (canSwipe && currentIndex < people.length && dir === 'right') {
 			await childRefs[currentIndex].current.swipe(dir);
 			// alert('right');
 			const userSwiped = people[currentIndex];
-			console.log(`You swiped on ${userSwiped.displayName}`);
+			console.log(`You swiped right on ${userSwiped.displayName}`);
 			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped);
 		}
 		setNumberOfPeople(numberOfPeople - 1);
@@ -244,19 +231,6 @@ function House() {
 							fetchCards();
 
 							return unsub;
-							// const q = query(colRef);
-							// onSnapshot(q, (snapshot) => {
-							// 	setPeople(
-							// 		snapshot.docs
-							// 			.filter((doc) => {
-							// 				return doc.id !== user?.uid;
-							// 			})
-							// 			.map((doc) => ({
-							// 				id: doc.id,
-							// 				...doc.data(),
-							// 			}))
-							// 	);
-							// });
 						} else {
 							router.push('/Home');
 						}
@@ -318,18 +292,10 @@ function House() {
 								className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
 								key={character.displayName}
 								preventSwipe={['up', 'down']}
-								// onSwipe={(dir) => swiped(dir, character.displayName, index)}
-								onSwipeLeft={(cardIndex) => {
-									console.log('Swipe NOPE');
-									// swipeLeft(cardIndex);
-								}}
-								onSwipedRight={(cardIndex) => {
-									console.log('Swipe MATCH');
-									// swipeRight(cardIndex);
-								}}
-								onCardLeftScreen={() =>
-									outOfFrame(character.displayName, index)
-								}
+								onSwipe={(dir) => swiped(dir, character.displayName, index)}
+								// onCardLeftScreen={() =>
+								// 	outOfFrame(character.displayName, index)
+								// }
 							>
 								<div className="flex h-3/4">
 									<Image
