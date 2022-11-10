@@ -94,7 +94,7 @@ function House() {
 		},
 	]);
 	// basically people.length
-	const [numberOfPeople, setNumberOfPeople] = useState();
+	const [numberOfPeople, setNumberOfPeople] = useState(people.length);
 
 	// idk
 	const [currentIndex, setCurrentIndex] = useState(people.length - 1);
@@ -152,13 +152,9 @@ function House() {
 	const swipe = async (dir) => {
 		if (canSwipe && currentIndex < people.length && dir === 'left') {
 			await childRefs[currentIndex].current.swipe(dir); // Swipe the card! // promise fulfilled
-			// const userSwiped = people[currentIndex]; // get user
-			// // console.log(`You swiped left on ${userSwiped.displayName}`); // wow it worked!
-			// setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped);
 		} else if (canSwipe && currentIndex < people.length && dir === 'right') {
-			await childRefs[currentIndex].current.swipe(dir);
-			// const userSwiped = people[currentIndex];
-			// setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped);
+			// await childRefs[currentIndex].current.swipe(dir);
+			await swipe('right');
 		}
 	};
 
