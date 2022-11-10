@@ -69,43 +69,43 @@ function House() {
 			interest: 'bball',
 		},
 		{
-			displayName: 'James',
+			displayName: 'Ernie',
 			photoURL:
 				'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
 			interest: 'dribbling',
 		},
 		{
-			displayName: 'Kobe',
+			displayName: 'Kenny',
 			photoURL:
 				'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
 			interest: 'shooting',
 		},
 		{
-			displayName: 'Wade',
+			displayName: 'Shaq',
 			photoURL:
 				'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
 			interest: 'passing',
 		},
 		{
-			displayName: 'Barkley',
+			displayName: 'Charles Barkley',
 			photoURL:
 				'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
 			interest: 'blocking',
 		},
 	]);
-	const [currentIndex, setCurrentIndex] = useState(people.length - 1);
-	const [aliens, setAliens] = useState([
-		{
-			displayName: 'alien',
-		},
-	]);
-	const [lastDirection, setLastDirection] = useState();
-	// used for outOfFrame closure
-
+	// basically people.length
 	const [numberOfPeople, setNumberOfPeople] = useState();
 
+	// idk
+	const [currentIndex, setCurrentIndex] = useState(people.length - 1);
+
+	// used for outOfFrame closure??
+	const [lastDirection, setLastDirection] = useState();
+
+	// idk useRef
 	const currentIndexRef = useRef(currentIndex);
 
+	// idk useMemo
 	const childRefs = useMemo(
 		() =>
 			Array(people.length)
@@ -134,6 +134,7 @@ function House() {
 		} else if (dir === 'right') {
 			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped); // amazed!
 		}
+		setNumberOfPeople(numberOfPeople - 1);
 	};
 
 	const swiped2 = (direction) => {
@@ -151,15 +152,14 @@ function House() {
 	const swipe = async (dir) => {
 		if (canSwipe && currentIndex < people.length && dir === 'left') {
 			await childRefs[currentIndex].current.swipe(dir); // Swipe the card! // promise fulfilled
-			const userSwiped = people[currentIndex]; // get user
-			// console.log(`You swiped left on ${userSwiped.displayName}`); // wow it worked!
-			setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped);
+			// const userSwiped = people[currentIndex]; // get user
+			// // console.log(`You swiped left on ${userSwiped.displayName}`); // wow it worked!
+			// setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped);
 		} else if (canSwipe && currentIndex < people.length && dir === 'right') {
 			await childRefs[currentIndex].current.swipe(dir);
-			const userSwiped = people[currentIndex];
-			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped);
+			// const userSwiped = people[currentIndex];
+			// setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped);
 		}
-		setNumberOfPeople(numberOfPeople - 1);
 	};
 
 	const logout = () => {
