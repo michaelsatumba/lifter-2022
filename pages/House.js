@@ -93,6 +93,40 @@ function House() {
 			interest: 'blocking',
 		},
 	]);
+
+	const [alien, setAlien] = useState([
+		{
+			displayName: 'Jordan',
+			photoURL:
+				'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+			interest: 'bball',
+		},
+		{
+			displayName: 'Ernie',
+			photoURL:
+				'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+			interest: 'dribbling',
+		},
+		{
+			displayName: 'Kenny',
+			photoURL:
+				'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
+			interest: 'shooting',
+		},
+		{
+			displayName: 'Shaq',
+			photoURL:
+				'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+			interest: 'passing',
+		},
+		{
+			displayName: 'Charles Barkley',
+			photoURL:
+				'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
+			interest: 'blocking',
+		},
+	]);
+
 	// basically people.length
 	const [numberOfPeople, setNumberOfPeople] = useState(people.length);
 
@@ -123,18 +157,19 @@ function House() {
 
 	// set last direction and decrease current index
 	const swiped = (dir, nameToDelete, index) => {
+		setNumberOfPeople(numberOfPeople - 1);
 		setLastDirection(dir);
 		updateCurrentIndex(index - 1);
 		console.log('removed', nameToDelete);
 		console.log('direction', dir);
 		console.log('index', index);
+
 		const userSwiped = people[index]; // works!
 		if (dir === 'left') {
 			setDoc(doc(db, 'users', user.uid, 'nopes', userSwiped.id), userSwiped); // amazed!
 		} else if (dir === 'right') {
 			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped); // amazed!
 		}
-		setNumberOfPeople(numberOfPeople - 1);
 	};
 
 	const swiped2 = (direction) => {
@@ -142,20 +177,20 @@ function House() {
 		setLastDirection(direction);
 	};
 
-	// const outOfFrame = (displayName, idx) => {
-	// 	console.log(
-	// 		`${displayName} (${idx}) left the screen!`,
-	// 		currentIndexRef.current
-	// 	);
-	// };
+	const outOfFrame = (displayName, idx) => {
+		console.log(
+			`${displayName} (${idx}) left the screen!`,
+			currentIndexRef.current
+		);
+	};
 
 	const swipe = async (dir) => {
 		if (canSwipe && currentIndex < people.length && dir === 'left') {
 			await childRefs[currentIndex].current.swipe(dir); // Swipe the card! // promise fulfilled
 		} else if (canSwipe && currentIndex < people.length && dir === 'right') {
-			// await childRefs[currentIndex].current.swipe(dir);
-			await swipe('right');
+			await childRefs[currentIndex].current.swipe(dir);
 		}
+		// setNumberOfPeople(numberOfPeople - 1); // fixed style = null issue - not sure why
 	};
 
 	const logout = () => {
@@ -227,7 +262,6 @@ function House() {
 									}
 								);
 							};
-
 							fetchCards();
 
 							return unsub;
@@ -281,11 +315,8 @@ function House() {
 			{/* cards */}
 
 			<div className="flex justify-center">
-				{numberOfPeople > 0 ? (
+				{numberOfPeople > 0 && currentIndex > -1 ? (
 					people.map((character, index) => {
-						{
-							/* console.log(true) */
-						}
 						return (
 							<TinderCard
 								ref={childRefs[index]}
@@ -293,9 +324,9 @@ function House() {
 								key={character.displayName}
 								preventSwipe={['up', 'down']}
 								onSwipe={(dir) => swiped(dir, character.displayName, index)}
-								// onCardLeftScreen={() =>
-								// 	outOfFrame(character.displayName, index)
-								// }
+								onCardLeftScreen={() =>
+									outOfFrame(character.displayName, index)
+								}
 							>
 								<div className="flex h-3/4">
 									<Image
@@ -319,7 +350,7 @@ function House() {
 				) : (
 					<TinderCard
 						className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
-						// key={alien.displayName}
+						key={alien.displayName}
 						preventSwipe={['up', 'down']}
 						onSwipe={(dir) => swiped2(dir)}
 					>
