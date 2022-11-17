@@ -155,14 +155,15 @@ function House() {
 
 	const canSwipe = currentIndex >= 0;
 
+	//original
 	// set last direction and decrease current index
 	const swiped = (dir, nameToDelete, index) => {
 		setNumberOfPeople(numberOfPeople - 1);
 		setLastDirection(dir);
 		updateCurrentIndex(index - 1);
-		console.log('removed', nameToDelete);
-		console.log('direction', dir);
-		console.log('index', index);
+		// console.log('removed', nameToDelete);
+		// console.log('direction', dir);
+		// console.log('index', index);
 
 		const userSwiped = people[index]; // works!
 		if (dir === 'left') {
@@ -178,19 +179,19 @@ function House() {
 	};
 
 	const outOfFrame = (displayName, idx) => {
-		console.log(
-			`${displayName} (${idx}) left the screen!`,
-			currentIndexRef.current
-		);
+		// console.log(
+		// 	`${displayName} (${idx}) left the screen!`,
+		// 	currentIndexRef.current
+		// );
 	};
 
+	//original
 	const swipe = async (dir) => {
-		if (canSwipe && currentIndex < people.length && dir === 'left') {
+		if (canSwipe && currentIndex < numberOfPeople) {
 			await childRefs[currentIndex].current.swipe(dir); // Swipe the card! // promise fulfilled
-		} else if (canSwipe && currentIndex < people.length && dir === 'right') {
-			await childRefs[currentIndex].current.swipe(dir);
+		} else {
+			alert('no new profiles');
 		}
-		// setNumberOfPeople(numberOfPeople - 1); // fixed style = null issue - not sure why
 	};
 
 	const logout = () => {
@@ -315,69 +316,42 @@ function House() {
 			{/* cards */}
 
 			<div className="flex justify-center">
-				{numberOfPeople > 0 && currentIndex > -1 ? (
-					people.map((character, index) => {
-						return (
-							<TinderCard
-								ref={childRefs[index]}
-								className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
-								key={character.displayName}
-								preventSwipe={['up', 'down']}
-								onSwipe={(dir) => swiped(dir, character.displayName, index)}
-								onCardLeftScreen={() =>
-									outOfFrame(character.displayName, index)
-								}
-							>
-								<div className="flex h-3/4">
-									<Image
-										src={character.photoURL}
-										alt="personPhoto"
-										layout="fill"
-										className=""
-										width={500}
-										height={500}
-									/>
-								</div>
-								<div className="p-5 flex flex-col">
-									<p className="text-xl font-bold text-black">
-										{character.displayName}
-									</p>
-									<p className="text-xl text-black">{character.interest}</p>
-								</div>
-							</TinderCard>
-						);
-					})
-				) : (
-					<TinderCard
-						className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
-						key={alien.displayName}
-						preventSwipe={['up', 'down']}
-						onSwipe={(dir) => swiped2(dir)}
-					>
-						<div className="flex h-3/4">
-							<Image
-								src={
-									'https://images.unsplash.com/photo-1597176116047-876a32798fcc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fHNhZHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=900&q=60'
-								}
-								alt="personPhoto"
-								layout="fill"
-								className=""
-								width={500}
-								height={500}
-							/>
-						</div>
-						<div className="p-5 flex flex-col">
-							<p>No more profiles</p>
-						</div>
-					</TinderCard>
-				)}
+				{people.map((character, index) => {
+					return (
+						<TinderCard
+							ref={childRefs[index]}
+							className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
+							key={character.displayName}
+							preventSwipe={['up', 'down']}
+							onSwipe={(dir) => swiped(dir, character.displayName, index)}
+							onCardLeftScreen={() => outOfFrame(character.displayName, index)}
+						>
+							<div className="flex h-3/4">
+								<Image
+									src={character.photoURL}
+									alt="personPhoto"
+									layout="fill"
+									className=""
+									width={500}
+									height={500}
+								/>
+							</div>
+							<div className="p-5 flex flex-col">
+								<p className="text-xl font-bold text-black">
+									{character.displayName}
+								</p>
+								<p className="text-xl text-black">{character.interest}</p>
+							</div>
+						</TinderCard>
+					);
+				})}
 			</div>
 
 			<div className="flex justify-center absolute inset-x-0 bottom-28">
-				{lastDirection ? (
+				{numberOfPeople > 0 ? (
 					<h2 className="infoText">You swiped {lastDirection}</h2>
 				) : (
-					<h2 className="infoText" />
+					<h2 className="infoText">No new Profiles</h2>
 				)}
 			</div>
 
