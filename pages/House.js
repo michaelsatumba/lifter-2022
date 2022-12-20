@@ -164,6 +164,7 @@ function House() {
 		// console.log('removed', nameToDelete);
 		// console.log('direction', dir);
 		// console.log('index', index);
+		console.log(numberOfPeople);
 
 		const userSwiped = people[index]; // works!
 		if (dir === 'left') {
@@ -173,11 +174,13 @@ function House() {
 		}
 	};
 
-	const swiped2 = (direction) => {
-		console.log('removing');
-		setLastDirection(direction);
-	};
+	// not used
+	// const swiped2 = (direction) => {
+	// 	console.log('removing');
+	// 	setLastDirection(direction);
+	// };
 
+	// for testing
 	const outOfFrame = (displayName, idx) => {
 		// console.log(
 		// 	`${displayName} (${idx}) left the screen!`,
@@ -186,7 +189,7 @@ function House() {
 	};
 
 	//original
-	const swipe = async (dir) => {
+	const swipeInstruct = async (dir) => {
 		if (canSwipe && currentIndex < numberOfPeople) {
 			await childRefs[currentIndex].current.swipe(dir); // Swipe the card! // promise fulfilled
 		} else {
@@ -316,35 +319,56 @@ function House() {
 			{/* cards */}
 
 			<div className="flex justify-center">
-				{people.map((character, index) => {
-					return (
-						<TinderCard
-							ref={childRefs[index]}
-							className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
-							key={character.displayName}
-							preventSwipe={['up', 'down']}
-							onSwipe={(dir) => swiped(dir, character.displayName, index)}
-							onCardLeftScreen={() => outOfFrame(character.displayName, index)}
-						>
-							<div className="flex h-3/4">
-								<Image
-									src={character.photoURL}
-									alt="personPhoto"
-									layout="fill"
-									className=""
-									width={500}
-									height={500}
-								/>
-							</div>
-							<div className="p-5 flex flex-col">
-								<p className="text-xl font-bold text-black">
-									{character.displayName}
-								</p>
-								<p className="text-xl text-black">{character.interest}</p>
-							</div>
-						</TinderCard>
-					);
-				})}
+				{numberOfPeople > 0 ? (
+					people.map((character, index) => {
+						return (
+							<TinderCard
+								ref={childRefs[index]}
+								className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2"
+								key={character.displayName}
+								preventSwipe={['up', 'down']}
+								onSwipe={(dir) => swiped(dir, character.displayName, index)}
+								onCardLeftScreen={() =>
+									outOfFrame(character.displayName, index)
+								}
+							>
+								<div className="flex h-3/4">
+									<Image
+										src={character.photoURL}
+										alt="personPhoto"
+										layout="fill"
+										className=""
+										width={500}
+										height={500}
+									/>
+								</div>
+								<div className="p-5 flex flex-col">
+									<p className="text-xl font-bold text-black">
+										{character.displayName}
+									</p>
+									<p className="text-xl text-black">{character.interest}</p>
+								</div>
+							</TinderCard>
+						);
+					})
+				) : (
+					<TinderCard className="absolute flex flex-col bg-white h-3/4 w-3/4 rounded-xl border-gray-200 border-2">
+						<div className="flex h-3/4">
+							<Image
+								src="https://images.unsplash.com/photo-1617440168937-c6497eaa8db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
+								alt="personPhoto"
+								layout="fill"
+								className=""
+								width={500}
+								height={500}
+							/>
+						</div>
+						<div className="p-5 flex flex-col">
+							<p className="text-xl font-bold text-black"></p>
+							<p className="text-xl text-black"></p>
+						</div>
+					</TinderCard>
+				)}
 			</div>
 
 			<div className="flex justify-center absolute inset-x-0 bottom-28">
@@ -358,13 +382,13 @@ function House() {
 			{/* buttons */}
 			<div className="flex justify-evenly absolute inset-x-0 bottom-11">
 				<button
-					onClick={() => swipe('left')}
+					onClick={() => swipeInstruct('left')}
 					className="items-center justify-center rounded-full w-16 h-16 bg-red-200"
 				>
 					{/* <Entypo name="cross" size={24} color="red" /> */}
 				</button>
 				<button
-					onClick={() => swipe('right')}
+					onClick={() => swipeInstruct('right')}
 					className="items-center justify-center rounded-full w-16 h-16 bg-green-200"
 				>
 					{/* <Entypo name="check" size={24} color="green" /> */}
