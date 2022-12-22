@@ -1,66 +1,26 @@
 import React, { useMemo, useRef } from 'react';
 import { useEffect, useState } from 'react';
-import { authentication, db, storage } from '../firebase';
+import { authentication, db } from '../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {
-	addDoc,
 	getDoc,
 	getDocs,
 	collection,
-	serverTimestamp,
-	deleteDoc,
 	doc,
-	orderBy,
 	onSnapshot,
 	query,
-	updateDoc,
 	setDoc,
 	where,
 } from 'firebase/firestore';
-import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import TinderCard from 'react-tinder-card';
-
-const dbo = [
-	{
-		displayName: 'Richard Hendricks',
-		photoURL:
-			'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-		interest: 'bball',
-	},
-	{
-		displayName: 'Erlich Bachman',
-		photoURL:
-			'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-		interest: 'dribbling',
-	},
-	{
-		displayName: 'Monica Hall',
-		photoURL:
-			'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-		interest: 'shooting',
-	},
-	{
-		displayName: 'Jared Dunn',
-		photoURL:
-			'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
-		interest: 'passing',
-	},
-	{
-		displayName: 'Dinesh Chugtai',
-		photoURL:
-			'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
-		interest: 'blocking',
-	},
-];
 
 function House() {
 	const router = useRouter();
 
 	const [user, setUser] = useState();
 	const [picture, setPicture] = useState();
-	const colRef = collection(db, 'users');
 	const [people, setPeople] = useState([
 		{
 			displayName: 'Jordan',
@@ -94,42 +54,6 @@ function House() {
 		},
 	]);
 
-	const [alien, setAlien] = useState([
-		{
-			displayName: 'Jordan',
-			photoURL:
-				'https://images.unsplash.com/photo-1667238158829-880e8c3a89c9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-			interest: 'bball',
-		},
-		{
-			displayName: 'Ernie',
-			photoURL:
-				'https://images.unsplash.com/photo-1667136767321-8278d9ced831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-			interest: 'dribbling',
-		},
-		{
-			displayName: 'Kenny',
-			photoURL:
-				'https://images.unsplash.com/photo-1667276978667-087337e015bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=600&q=60',
-			interest: 'shooting',
-		},
-		{
-			displayName: 'Shaq',
-			photoURL:
-				'https://images.unsplash.com/photo-1667296940025-3550476fc2fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMnx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
-			interest: 'passing',
-		},
-		{
-			displayName: 'Charles Barkley',
-			photoURL:
-				'https://images.unsplash.com/photo-1667307450467-79ccf8e172df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxN3x8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=60',
-			interest: 'blocking',
-		},
-	]);
-
-	// basically people.length
-	const [numberOfPeople, setNumberOfPeople] = useState(people.length);
-
 	// idk
 	const [currentIndex, setCurrentIndex] = useState(people.length - 1);
 
@@ -138,6 +62,9 @@ function House() {
 
 	// idk useRef
 	const currentIndexRef = useRef(currentIndex);
+
+	// basically people.length
+	const [numberOfPeople, setNumberOfPeople] = useState(people.length);
 
 	// idk useMemo
 	const childRefs = useMemo(
@@ -173,12 +100,6 @@ function House() {
 			setDoc(doc(db, 'users', user.uid, 'swipes', userSwiped.id), userSwiped); // amazed!
 		}
 	};
-
-	// not used
-	// const swiped2 = (direction) => {
-	// 	console.log('removing');
-	// 	setLastDirection(direction);
-	// };
 
 	// for testing
 	const outOfFrame = (displayName, idx) => {
